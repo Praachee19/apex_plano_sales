@@ -1,0 +1,5 @@
+week_start,store_id,article_code,size,sales_units,sales_value,opening_stock,receipts,transfers_in,transfers_out,closing_stock,current_zone,launch_date,first_receipt_date,cost_per_unit
+2026-07-06,STORE_A,9251EA38,42,2,3980,5,0,0,0,3,Prime,2026-05-01,2026-05-01,900
+2026-07-06,STORE_B,9251EA38,42,0,0,8,0,0,0,8,Tertiary,2026-05-01,2026-05-01,900
+2026-07-13,STORE_A,9251EA38,42,3,5970,3,0,0,0,0,Prime,2026-05-01,2026-05-01,900
+2026-07-13,STORE_B,9251EA38,42,0,0,8,0,0,0,8,Tertiary,2026-05-01,2026-05-01,900

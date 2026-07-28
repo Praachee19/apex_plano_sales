@@ -1,0 +1,45 @@
+{
+  "source": "APEX VM Docket (Guideline) and APEX VM DISPLAY 2026",
+  "rules": [
+    {
+      "id": "VM-001",
+      "rule": "Group merchandise by category, style and colour family.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-002",
+      "rule": "Use eye-level and slightly-below-eye-level positions for key merchandise.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-003",
+      "rule": "Lower-price merchandise may be placed lower. Avoid positions that are too high or too low to see or reach.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-004",
+      "rule": "Each brand wall retains its approved colours, POSM and visual identity.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-005",
+      "rule": "A POSM occupies one row or one column. Two POSMs must not share the same shelf or wall column.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-006",
+      "rule": "Fixture 1 has a maximum of 24 product options and uses raisers for best sellers and fresh stock plus a signage cube.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-007",
+      "rule": "Fixture 3 has a maximum of 16 product options and uses raisers for best sellers and fresh stock plus a signage cube.",
+      "type": "hard"
+    },
+    {
+      "id": "VM-008",
+      "rule": "Avoid overcrowding. Use a curated weekly selection.",
+      "type": "hard"
+    }
+  ]
+}

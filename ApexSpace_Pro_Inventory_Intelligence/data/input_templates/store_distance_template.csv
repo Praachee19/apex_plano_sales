@@ -1,0 +1,3 @@
+from_store,to_store,distance_km
+STORE_B,STORE_A,12
+STORE_A,STORE_B,12

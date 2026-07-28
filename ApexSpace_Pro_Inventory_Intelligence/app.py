@@ -1,4 +1,5 @@
-from __future__ import annotations
+ from __future__ import annotations]
+
 
 import sys
 import textwrap
@@ -50,12 +51,7 @@ ROOT = Path(__file__).resolve().parent
 EXPECTED_VENV = (ROOT / ".venv").resolve()
 CURRENT_PREFIX = Path(sys.prefix).resolve()
 
-# Prevent Windows from silently using the global or an outer-folder environment.
-if CURRENT_PREFIX != EXPECTED_VENV:
-    st.error("ApexSpace Pro is running with the wrong Python environment.")
-    st.code(f"Current Python: {sys.executable}\nCurrent environment: {CURRENT_PREFIX}\nRequired environment: {EXPECTED_VENV}")
-    st.info("Close this server and double-click RESET_AND_RUN.bat inside this exact project folder.")
-    st.stop()
+
 
 st.markdown(
     """

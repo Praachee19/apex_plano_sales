@@ -1,7 +1,6 @@
- from __future__ import annotations]
+from __future__ import annotations
 
 
-import sys
 import textwrap
 import zipfile
 from datetime import date
@@ -48,8 +47,7 @@ from inventory_intelligence import (
 st.set_page_config(page_title="ApexSpace Pro", page_icon="👟", layout="wide")
 
 ROOT = Path(__file__).resolve().parent
-EXPECTED_VENV = (ROOT / ".venv").resolve()
-CURRENT_PREFIX = Path(sys.prefix).resolve()
+
 
 
 
@@ -589,7 +587,7 @@ with tab_inventory:
         )
         move_data = within_actions.copy()
         if move_filter == "Moves only":
-            move_data = move_data[~move_data["within_store_action"].str.startswith("Retain")]
+            move_data = move_data[~move_data["within_store_action"].fillna("").str.startswith("Retain")]
         elif move_filter == "Remove and transfer review":
             move_data = move_data[move_data["target_zone"] == "Remove"]
         elif move_filter == "Prime promotions":
@@ -618,34 +616,24 @@ with tab_inventory:
             st.dataframe(candidates[[c for c in candidate_cols if c in candidates.columns]], use_container_width=True, height=470)
 
             template_dir = ROOT / "data" / "input_templates"
-            weekly_template_path = template_dir / "weekly_store_sales_template.csv"
-            display_template_path = template_dir / "current_display_template.csv"
-            distance_template_path = template_dir / "store_distance_template.csv"
-            t1, t2, t3 = st.columns(3)
-            with t1:
-                st.download_button(
-                    "Download weekly store template",
-                    weekly_template_path.read_bytes(),
-                    weekly_template_path.name,
-                    "text/csv",
-                    use_container_width=True,
-                )
-            with t2:
-                st.download_button(
-                    "Download current-display template",
-                    display_template_path.read_bytes(),
-                    display_template_path.name,
-                    "text/csv",
-                    use_container_width=True,
-                )
-            with t3:
-                st.download_button(
-                    "Download distance template",
-                    distance_template_path.read_bytes(),
-                    distance_template_path.name,
-                    "text/csv",
-                    use_container_width=True,
-                )
+            template_files = {
+                "Download weekly store template": template_dir / "weekly_store_sales_template.csv",
+                "Download current-display template": template_dir / "current_display_template.csv",
+                "Download distance template": template_dir / "store_distance_template.csv",
+            }
+            template_columns = st.columns(3)
+            for column, (button_label, file_path) in zip(template_columns, template_files.items()):
+                with column:
+                    if file_path.exists():
+                        st.download_button(
+                            button_label,
+                            data=file_path.read_bytes(),
+                            file_name=file_path.name,
+                            mime="text/csv",
+                            use_container_width=True,
+                        )
+                    else:
+                        st.warning(f"Missing template: {file_path.name}")
         else:
             p1, p2, p3 = st.columns(3)
             with p1:
@@ -674,23 +662,42 @@ with tab_inventory:
                 gross_margin_rate=float(gross_margin_rate),
             )
             network_alerts = generate_network_alerts(network_snapshot, transfer_df)
-            n1, n2, n3, n4 = st.columns(4)
-            n1.metric("Latest network week", network_latest_week.strftime("%d %b %Y"))
-            n2.metric("Stores", network_snapshot["store_id"].nunique())
-            n3.metric("Transfer lines", len(transfer_df))
-            n4.metric("Critical network alerts", int((network_alerts.get("severity", pd.Series(dtype=str)) == "Critical").sum()))
-            st.dataframe(transfer_df, use_container_width=True, height=500)
-            network_bytes = export_inventory_intelligence_xlsx(
-                inventory_health, within_actions, all_store_alerts,
-                transfers=transfer_df, network_snapshot=network_snapshot, sku_health=sku_health,
-            )
-            st.download_button(
-                "Download store-transfer execution pack",
-                network_bytes,
-                f"network_transfer_pack_{network_latest_week.date().isoformat()}.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True,
-            )
+
+            if network_snapshot.empty or network_latest_week is None:
+                st.warning(
+                    "No valid store-week records were found. Check the uploaded weekly sales and inventory file."
+                )
+            else:
+                latest_week_ts = pd.to_datetime(network_latest_week)
+                n1, n2, n3, n4 = st.columns(4)
+                n1.metric("Latest network week", latest_week_ts.strftime("%d %b %Y"))
+                n2.metric("Stores", network_snapshot["store_id"].nunique())
+                n3.metric("Transfer lines", len(transfer_df))
+                n4.metric(
+                    "Critical network alerts",
+                    int(
+                        (
+                            network_alerts.get("severity", pd.Series(dtype=str))
+                            == "Critical"
+                        ).sum()
+                    ),
+                )
+                st.dataframe(transfer_df, use_container_width=True, height=500)
+                network_bytes = export_inventory_intelligence_xlsx(
+                    inventory_health,
+                    within_actions,
+                    all_store_alerts,
+                    transfers=transfer_df,
+                    network_snapshot=network_snapshot,
+                    sku_health=sku_health,
+                )
+                st.download_button(
+                    "Download store-transfer execution pack",
+                    data=network_bytes,
+                    file_name=f"network_transfer_pack_{latest_week_ts.date().isoformat()}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
 
     with rules_view:
         st.markdown("#### Footwear-specific classification logic")
